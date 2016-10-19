@@ -1,18 +1,18 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
-use iEEE.std_logic_unsigned.all;
+use iEEE.numeric_std.all;
 
 -- Alunos: Adan Pereira Gomes e Wesley Mayk Gama Luz
 
 entity contador_decrescente is
 	generic (
-		in_width: positive := 20;
-		out_width: positive :=
+		in_width	: positive := 4;
+		out_width: positive := 4
 	);
 	port (
 		clock, reset, enable: in std_logic;
-		in_value: in std_logic_vector((in_width-1) downto 0);
-		m0, m1: out std_logic_vector((out_width-1) downto 0)
+		in_value : in std_logic_vector(in_width-1 downto 0);
+		m0, m1	: out std_logic_vector(out_width-1 downto 0)
 	);
 end entity;
 
@@ -50,7 +50,7 @@ begin
 	end process;
 
 	-- state element (memory)
-	ME: process (clock, reset, enable)
+	ME: process (clock, reset)
 	begin
 		if reset = '0' then
 			actualState <= init;
@@ -68,7 +68,7 @@ begin
 			when init =>
 				tempo <= 0;
 				sn_m0 <= 0;
-				sn_m1 <= 0;
+				sn_m1 <= unsigned(in_value);
 				zero  <= 0;
 			when count =>
 				tempo <= tempo + 1 ;

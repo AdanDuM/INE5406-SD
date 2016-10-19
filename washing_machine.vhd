@@ -6,19 +6,22 @@ use IEEE.numeric_std.all;
 
 entity washing_machine is
 	generic (
-		state_width : positive := 2
+		sr_width : positive := 2 	-- state register width (motor_state)
 	--	address_width : positive := 2
 	);
 	port (
 		clock, reset: in std_logic;
 		-- interface externa
-		on_button, sensor_cover, exceeded_weight, timer, empty, full : in std_logic;
-		motor_state_in : in std_logic_vector(state_width-1 downto 0);
-		motor_state_out : out std_logic_vector(state_width-1 downto 0);
-		motor_state_en,
-		water_pump_in, water_pump_out, 
-		rotate_motor_l, rotate_motor_r, 
-		led_waiting, led_soak, led_wash, led_spin, led_ready : out std_logic
+		on_button, sensor_cover, 		-- sensor signals
+		zero_minute, zero_seconds, 	-- timer flags
+		empty, full : in std_logic; 	-- filled flags
+		motor_state_in : in std_logic_vector(sr_width-1 downto 0); 		-- motor state register input
+		motor_state_out: out std_logic_vector(sr_width-1 downto 0); 	-- motor state register output
+		motor_state_en, 						-- motor state register enable
+		water_pump_in, water_pump_out, 	-- pump control signals
+		rotate_motor_l, rotate_motor_r, 	-- motor control signals
+		led_waiting, led_soak, led_wash, led_spin, led_ready, -- led info
+		timer_reset: out std_logic
 		-- interface com barramento
 		--writeE, readE: in std_logic;
 		--address : in std_logic_vector(address_width-1 downto 0);
@@ -33,7 +36,7 @@ architecture BC of washing_machine is
 begin
 
 	-- next-state logic
-	LPE: process(actualState, motor_state_en, on_button, sensor_cover, exceeded_weight, timer, empty, full) is
+	LPE: process(actualState, motor_state_en, on_button, sensor_cover, zero_minute, zero_seconds, empty, full) is
 	begin
 		nextState <= actualState;
 		case actualState is
@@ -48,7 +51,7 @@ begin
 					nextState <= paused;
 				end if;
 			when soak =>
-				if timer = '1' then
+				if zero_minute = '1' then
 					nextState <= spin;
 				end if;
 			when spin =>
@@ -64,15 +67,21 @@ begin
 					nextState <= wash;
 				end if;
 			when paused =>
-				if motor_state_in = "01" and timer = '0' then
+				if motor_state_in = "01" and zero_minute = '0' then
 					nextState <= rotate_r;
-				elsif motor_state_in = "10" and timer = '0' then
+				elsif motor_state_in = "10" and zero_minute = '0' then
 					nextState <= rotate_l;
+				elsif zero_minute = '1' then
+					nextState <= wash;
 				end if;
 			when rotate_l =>
-				nextState <= paused;
+				if zero_seconds = '1' then
+					nextState <= paused;
+				end if;
 			when rotate_r =>
-				nextState <= paused;
+				if zero_seconds = '1' then
+					nextState <= paused;
+				end if;
 			when ready =>
 				if on_button = '1' or sensor_cover = '0' then
 					nextState <= waiting;
@@ -95,6 +104,7 @@ begin
 	begin
 		case actualState is
 			when waiting =>
+				timer_reset <= '0'.
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');
@@ -110,6 +120,7 @@ begin
 				led_spin 	<= '0';
 				led_ready 	<= '0';
 			when wash =>
+				timer_reset <= '0'.
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');
@@ -125,6 +136,7 @@ begin
 				led_spin 	<= '0';
 				led_ready 	<= '0';
 			when soak =>
+				timer_reset <= '0'.
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');
@@ -140,6 +152,7 @@ begin
 				led_spin 	<= '0'; 
 				led_ready 	<= '0';
 			when spin =>
+				timer_reset <= '0'.
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');
@@ -155,6 +168,7 @@ begin
 				led_spin 	<= '1';
 				led_ready 	<= '0';
 			when drain =>
+				timer_reset <= '0'.
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');
@@ -170,6 +184,7 @@ begin
 				led_spin 	<= '1';
 				led_ready 	<= '0';
 			when fill =>
+				timer_reset <= '0'.
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');
@@ -185,6 +200,7 @@ begin
 				led_spin 	<= '0';
 				led_ready 	<= '0';
 			when paused =>
+				timer_reset <= '0'.
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');
@@ -200,6 +216,7 @@ begin
 				led_spin 	<= '0';
 				led_ready 	<= '0';
 			when rotate_l =>
+				timer_reset <= '0'.
 				-- motor state register
 				motor_state_en  <= '1';
 				motor_state_out <= "10";
@@ -215,6 +232,7 @@ begin
 				led_spin 	<= '0'; 
 				led_ready 	<= '0';
 			when rotate_r =>
+				timer_reset <= '0'.
 				-- motor state register
 				motor_state_en  <= '1';
 				motor_state_out <= "01";
@@ -230,6 +248,7 @@ begin
 				led_spin 	<= '0';
 				led_ready 	<= '0';
 			when ready =>
+				timer_reset <= '0'.
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');

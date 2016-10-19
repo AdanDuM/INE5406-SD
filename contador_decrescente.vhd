@@ -19,8 +19,8 @@ end entity;
 architecture FSM of contador_decrescente is
 	type State is (init, count, sm0, sm1, zero);
 	signal actualState, nextState: State;
-	signal sn_m0, sn_m1: positive 0 to 9; 
-	signal tempo: positive 0 to 59;
+	signal sn_m0, sn_m1: positive range 0 to 9; 
+	signal tempo: positive range 0 to 59;
 begin
 
 	-- next state logic
@@ -42,15 +42,11 @@ begin
 				nextState <= count;
 			when sm1 =>
 				nextState <= count;
-			when zero =>
-				if  then --definir condição
-					nextState <= init;
-				end if;
 		end case;
 	end process;
 
 	-- state element (memory)
-	ME: process (clock, reset)
+	ME: process(clock, reset) is
 	begin
 		if reset = '0' then
 			actualState <= init;
@@ -69,28 +65,18 @@ begin
 				tempo <= 0;
 				sn_m0 <= 0;
 				sn_m1 <= unsigned(in_value);
-				zero  <= 0;
 			when count =>
 				tempo <= tempo + 1 ;
 				sn_m0 <= 0;
 				sn_m1 <= 0;
-				zero  <= 0;
 			when sm0 =>
 				tempo <= 0 ;
 				sn_m0 <= sn_m0 - 1;
 				sn_m1 <= sn_m1;
-				zero  <= 0;
 			when sm1 =>
 				tempo <= 0;
 				sn_m0 <=  9;
 				sn_m1 <= sn_m1 - 1;
-				zero  <= 0;
-			when zero =>
-				tempo <= 0 ;
-				sn_m0 <= 0;
-				sn_m1 <= 0;
-				zero  <= 1;
-			
 		end case;
 		m0 <= std_logic_vector(sn_m0);
 		m1 <= std_logic_vector(sn_m1);

@@ -78,8 +78,8 @@ begin
 				sn_m0 <=  9;
 				sn_m1 <= sn_m1 - 1;
 		end case;
-		m0 <= std_logic_vector(sn_m0);
-		m1 <= std_logic_vector(sn_m1);
+		m0 <= std_logic_vector(to_unsigned(sn_m0, m0'length));
+		m1 <= std_logic_vector(to_unsigned(sn_m1, m1'length));
 	end process;
 	
 end architecture; 

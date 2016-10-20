@@ -67,9 +67,9 @@ begin
 					nextState <= wash;
 				end if;
 			when paused =>
-				if motor_state_in = "01" and zero_minute = '0' then
+				if motor_state_in = "01" and zero_minute = '0' and zero_seconds = '1' then
 					nextState <= rotate_r;
-				elsif motor_state_in = "10" and zero_minute = '0' then
+				elsif motor_state_in = "10" and zero_minute = '0' and zero_seconds = '1' then
 					nextState <= rotate_l;
 				elsif zero_minute = '1' then
 					nextState <= wash;
@@ -104,7 +104,7 @@ begin
 	begin
 		case actualState is
 			when waiting =>
-				timer_reset <= '0'.
+				timer_reset <= '0';
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');
@@ -120,7 +120,7 @@ begin
 				led_spin 	<= '0';
 				led_ready 	<= '0';
 			when wash =>
-				timer_reset <= '0'.
+				timer_reset <= '0';
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');
@@ -136,7 +136,7 @@ begin
 				led_spin 	<= '0';
 				led_ready 	<= '0';
 			when soak =>
-				timer_reset <= '0'.
+				timer_reset <= '0';
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');
@@ -152,7 +152,7 @@ begin
 				led_spin 	<= '0'; 
 				led_ready 	<= '0';
 			when spin =>
-				timer_reset <= '0'.
+				timer_reset <= '0';
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');
@@ -168,7 +168,7 @@ begin
 				led_spin 	<= '1';
 				led_ready 	<= '0';
 			when drain =>
-				timer_reset <= '0'.
+				timer_reset <= '0';
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');
@@ -184,7 +184,7 @@ begin
 				led_spin 	<= '1';
 				led_ready 	<= '0';
 			when fill =>
-				timer_reset <= '0'.
+				timer_reset <= '0';
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');
@@ -200,7 +200,7 @@ begin
 				led_spin 	<= '0';
 				led_ready 	<= '0';
 			when paused =>
-				timer_reset <= '0'.
+				timer_reset <= '1';
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');
@@ -216,7 +216,7 @@ begin
 				led_spin 	<= '0';
 				led_ready 	<= '0';
 			when rotate_l =>
-				timer_reset <= '0'.
+				timer_reset <= '0';
 				-- motor state register
 				motor_state_en  <= '1';
 				motor_state_out <= "10";
@@ -232,7 +232,7 @@ begin
 				led_spin 	<= '0'; 
 				led_ready 	<= '0';
 			when rotate_r =>
-				timer_reset <= '0'.
+				timer_reset <= '0';
 				-- motor state register
 				motor_state_en  <= '1';
 				motor_state_out <= "01";
@@ -248,7 +248,7 @@ begin
 				led_spin 	<= '0';
 				led_ready 	<= '0';
 			when ready =>
-				timer_reset <= '0'.
+				timer_reset <= '0';
 				-- motor state register
 				motor_state_en  <= '0';
 				motor_state_out <= (others => '0');

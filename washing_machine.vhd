@@ -36,7 +36,7 @@ architecture BC of washing_machine is
 begin
 
 	-- next-state logic
-	LPE: process(actualState, motor_state_en, on_button, sensor_cover, zero_minute, zero_seconds, empty, full) is
+	LPE: process(actualState, motor_state_in, on_button, sensor_cover, zero_minute, zero_seconds, empty, full) is
 	begin
 		nextState <= actualState;
 		case actualState is
